@@ -538,6 +538,10 @@
             white-space: nowrap; /* Thay đổi */
         }
 
+        .wheel-section div {
+            display: none; /* Ẩn tất cả chữ trong các ô */
+        }
+
 
         .wheel-pointer {
             position: absolute;
@@ -692,27 +696,183 @@
         .hero.hidden {
             display: none;
         }
+
+        /* Thêm vào phần style */
+        .page-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        .page-section.active {
+            display: block;
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero {
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* Thêm vào CSS */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.8);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .page-transition.active {
+            opacity: 1;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #e74c3c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        /* CSS cho modal ảnh */
+        .image-modal {
+            display: none; /* Ẩn modal mặc định */
+            position: fixed; /* Đặt modal ở vị trí cố định */
+            z-index: 1000; /* Đảm bảo modal nằm trên tất cả các phần khác */
+            left: 0;
+            top: 0;
+            width: 100%; /* Chiếm toàn bộ chiều rộng */
+            height: 100%; /* Chiếm toàn bộ chiều cao */
+            background-color: rgba(0, 0, 0, 0.8); /* Màu nền tối với độ trong suốt */
+            justify-content: center; /* Canh giữa nội dung theo chiều ngang */
+            align-items: center; /* Canh giữa nội dung theo chiều dọc */
+            opacity: 0;
+            transition: opacity 0.5s; /* Hiệu ứng chuyển đổi cho opacity */
+        }
+
+        .image-modal.show {
+            display: flex; /* Hiển thị modal */
+            opacity: 1; /* Đặt opacity thành 1 khi hiển thị */
+        }
+
+        .modal-content {
+            max-width: 90%; /* Chiều rộng tối đa cho ảnh */
+            max-height: 90%; /* Chiều cao tối đa cho ảnh */
+            margin: auto; /* Căn giữa ảnh */
+        }
+
+        .close {
+            position: absolute; /* Đặt vị trí nút đóng */
+            top: 10px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+
+        body.invert-colors {
+            background-color: #333; /* Màu nền tối */
+            color: #f5f5f5; /* Màu chữ sáng */
+        }
+
+        body.invert-colors a {
+            color: #1abc9c; /* Màu liên kết sáng */
+        }
+
+        header.invert-colors {
+            background-color: #444; /* Màu nền header tối */
+        }
+
+        footer.invert-colors {
+            background-color: #444; /* Màu nền footer tối */
+        }
+
+        /* Đảo ngược màu cho các phần khác */
+        .invert-colors * {
+            filter: invert(1);
+        }
+
+
     </style>
 </head>
 
 <script>
+
     document.addEventListener('DOMContentLoaded', function() {
     const heroSection = document.querySelector('.hero');
     const navLinks = document.querySelectorAll('nav a');
+    
+    
+    // Ẩn tất cả các section trừ trang chủ khi load
+    document.querySelectorAll('.page-section').forEach(section => {
+        if (section.id !== 'home-section') {
+            section.style.display = 'none';
+            section.style.opacity = '0';
+        }
+    });
     
     // Xử lý sự kiện click cho mỗi liên kết
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const targetSection = this.getAttribute('data-section');
-            
-            // Ẩn tất cả các section
-            document.querySelectorAll('.page-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            
-            // Hiển thị section được chọn
-            document.getElementById(targetSection).style.display = 'block';
+            const loader = document.getElementById('page-loader');
+                loader.classList.add('active'); // Hiện loader
+
+                setTimeout(() => {
+                    showSection(targetSection);
+                    loader.classList.remove('active'); // Ẩn loader sau khi chuyển trang
+                }, 500);
+            // Thêm hiệu ứng fade out cho section hiện tại
+            const currentActiveSection = document.querySelector('.page-section.active');
+            if (currentActiveSection) {
+                currentActiveSection.style.opacity = '0';
+                setTimeout(() => {
+                    currentActiveSection.style.display = 'none';
+                    currentActiveSection.classList.remove('active');
+                    
+                    // Hiển thị section mới sau khi section cũ đã ẩn
+                    showSection(targetSection);
+                }, 500); // Thời gian phù hợp với duration của transition
+            } else {
+                showSection(targetSection);
+            }
             
             // Xử lý hiển thị hero section
             if (targetSection === 'home-section') {
@@ -721,8 +881,11 @@
                 heroSection.classList.add('hidden');
             }
             
-            // Cuộn lên đầu trang
-            window.scrollTo(0, 0);
+            // Cuộn lên đầu trang với hiệu ứng mượt
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
             
             // Thêm class active cho menu được chọn
             navLinks.forEach(item => item.classList.remove('active'));
@@ -730,14 +893,29 @@
         });
     });
     
+    // Hàm hiển thị section với hiệu ứng
+    function showSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.style.display = 'block';
+        // Kích hoạt reflow để animation chạy
+        void section.offsetWidth;
+        section.style.opacity = '1';
+        section.classList.add('active');
+    }
+    
     // Mặc định hiển thị trang chủ khi load
     document.getElementById('home-section').style.display = 'block';
+    document.getElementById('home-section').style.opacity = '1';
+    document.getElementById('home-section').classList.add('active');
     document.querySelector('nav a[data-section="home-section"]').classList.add('active');
-    heroSection.classList.remove('hidden'); // Đảm bảo hero hiển thị khi load trang chủ
+    heroSection.classList.remove('hidden');
 });
-    </script>
+</script>
 
 <body>
+    <div class="page-transition" id="page-loader">
+        <div class="loader"></div>
+    </div>
     <header>
         <div class="container">
             <div class="header-content">
@@ -762,6 +940,11 @@
             <p>Đến với Mũi Cà Mau, du khách sẽ được trải nghiệm không gian văn hóa sông nước miền Tây, tham quan cột mốc tọa độ quốc gia và thưởng thức những món ăn đặc sản nổi tiếng của vùng đất này.</p>
         </div>
     </section>
+
+    <button id="theme-toggle" style="margin-left: auto; background-color: transparent; border: none; color: white; cursor: pointer; font-size: 1.2rem;">
+        🌙
+    </button>
+
  <!-- Section Trang chủ -->
 <section id="home-section" class="page-section">
     <main class="main-content">
@@ -773,7 +956,7 @@
                 <div class="timeline-item">
                     <div class="timeline-img">
                         <!-- ẢNH CỦA BẠN CHÈN VÀO ĐÂY -->
-                        <img src="[link_anh_1]" alt="Khai phá Cà Mau" class="img-fluid">
+                        <img src="https://www.wtour.vn/datafiles/05-05-2019/15570242821656_namkyluctinh.jpg" alt="Khai phá Cà Mau" class="img-fluid">
                     </div>
                     <div class="timeline-content">
                         <h3>Thế kỷ XVII - Buổi đầu khai phá</h3>
@@ -785,7 +968,7 @@
                 <!-- Mốc 2 -->
                 <div class="timeline-item reverse">
                     <div class="timeline-img">
-                        <img src="[link_anh_2]" alt="Cà Mau thời Pháp" class="img-fluid">
+                        <img src="https://baocamau.vn/image/ckeditor/2024/20240411/images/TR3-1.jpg" alt="Cà Mau thời Pháp" class="img-fluid">
                     </div>
                     <div class="timeline-content">
                         <h3>1882-1945 - Thời kỳ Pháp thuộc</h3>
@@ -797,7 +980,7 @@
                 <!-- Mốc 3 -->
                 <div class="timeline-item">
                     <div class="timeline-img">
-                        <img src="[link_anh_3]" alt="Kháng chiến" class="img-fluid">
+                        <img src="https://camau.gov.vn/Datafiles/camau-gov-vn/wps/wcm/connect/6494999a-d2d8-4898-b872-5c3d6b499b33/1/994-jpg-3fmod-3dajperes-26amp-3bcvid-3d.png" alt="Kháng chiến" class="img-fluid">
                     </div>
                     <div class="timeline-content">
                         <h3>1945-1975 - Căn cứ cách mạng</h3>
@@ -809,7 +992,7 @@
                 <!-- Mốc 4 -->
                 <div class="timeline-item reverse">
                     <div class="timeline-img">
-                        <img src="[link_anh_4]" alt="Cà Mau hiện đại" class="img-fluid">
+                        <img src="https://camau.dcs.vn//SiteFolders/datafiles-old/tinhuy/gallery/lichsuvanhoa.jpg" alt="Cà Mau hiện đại" class="img-fluid">
                     </div>
                     <div class="timeline-content">
                         <h3>1997-nay - Tỉnh Cà Mau</h3>
@@ -986,27 +1169,33 @@
         <section id="gallery" class="section-spacing">
             <h2 class="section-title">Khám Phá Mũi Cà Mau Qua Ảnh</h2>
             <div class="gallery-grid">
+                <!-- Thêm phần modal để hiển thị ảnh lớn -->
+                <div id="image-modal" class="image-modal">
+                    <span class="close" id="close-modal">&times;</span>
+                    <img class="modal-content" id="modal-image">
+                    <div id="caption"></div>
+                </div>
                 <!-- Ảnh 1 - Thay link_anh_1 bằng URL ảnh của bạn -->
                 <div class="gallery-item">
-                    <img src="link_anh_1" alt="Cột mốc tọa độ quốc gia" class="gallery-img">
+                    <img src="https://diemdenantoan.sgtiepthi.vn/wp-content/uploads/2023/08/muicamau-9.jpg" alt="Cột mốc tọa độ quốc gia" class="gallery-img">
                     <div class="img-caption">Cột mốc tọa độ quốc gia</div>
                 </div>
                 
                 <!-- Ảnh 2 -->
                 <div class="gallery-item">
-                    <img src="link_anh_2" alt="Rừng ngập mặn" class="gallery-img">
+                    <img src="https://camaueco.com/wp-content/uploads/2023/11/he-sinh-thai-rung-ngap-man-ca-mau-2.jpg" alt="Rừng ngập mặn" class="gallery-img">
                     <div class="img-caption">Hệ sinh thái rừng ngập mặn</div>
                 </div>
                 
                 <!-- Ảnh 3 -->
                 <div class="gallery-item">
-                    <img src="link_anh_3" alt="Hoàng hôn" class="gallery-img">
+                    <img src="https://baocamau.vn/image/news/2023/20230421/fckimage/nmt-8.jpg" alt="Hoàng hôn" class="gallery-img">
                     <div class="img-caption">Hoàng hôn ở biển Tây</div>
                 </div>
                 
                 <!-- Ảnh 4 -->
                 <div class="gallery-item">
-                    <img src="link_anh_4" alt="Văn hóa địa phương" class="gallery-img">
+                    <img src="https://63stravel.com/s3_amazon/uploads/images/17188782650.png" alt="Văn hóa địa phương" class="gallery-img">
                     <div class="img-caption">Đời sống người dân</div>
                 </div>
             </div>
@@ -1108,6 +1297,7 @@
     }
 </script>
 
+<!-- Thay thế phần script của vòng quay may mắn bằng đoạn code sau -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Tạo vòng quay
@@ -1119,34 +1309,43 @@
         const closeModal = document.getElementById('close-modal');
         const timerMessage = document.getElementById('timer-message');
         
-        // Màu sắc cho các ô
+        // Màu sắc cho các ô - 9 màu tối và 1 màu sáng (vàng)
         const colors = [
-            '#e74c3c', '#3498db', '#2ecc71', '#f1c40f', 
-            '#9b59b6', '#1abc9c', '#e67e22', '#34495e',
-            '#d35400', '#27ae60'
+            '#2c3e50', '#34495e', '#1a1a1a', '#2d3436', 
+            '#3d3d3d', '#4a4a4a', '#5e5e5e', '#6d6d6d',
+            '#7f8c8d', '#f1c40f' // Màu vàng là màu trúng thưởng
         ];
         
         // Tạo các ô trên vòng quay
         const sections = 10;
         const deg = 360 / sections;
-        const winningSection = Math.floor(Math.random() * sections); // Ô trúng thưởng ngẫu nhiên
+        let winningSection = colors.indexOf('#f1c40f'); // Xác định vị trí màu vàng
         
-        for (let i = 0; i < sections; i++) {
-            const section = document.createElement('div');
-            section.className = 'wheel-section';
-            section.style.transform = `rotate(${deg * i}deg)`;
-            section.style.backgroundColor = colors[i];
-            
-            const text = document.createElement('div');
-            text.style.transform = `rotate(${deg / 2}deg)`;
-            text.style.textAlign = 'center';
-            text.style.width = '100px';
-            text.style.marginLeft = '-30px';
-            text.innerHTML = i === winningSection ? 'TRÚNG THƯỞNG' : 'MAY MẮN';
-            
-            section.appendChild(text);
-            wheel.appendChild(section);
+        // Xáo trộn mảng màu sắc
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
+        
+        function createWheel() {
+            wheel.innerHTML = '';
+            const shuffledColors = shuffleArray([...colors]);
+            winningSection = shuffledColors.indexOf('#f1c40f');
+            
+            for (let i = 0; i < sections; i++) {
+                const section = document.createElement('div');
+                section.className = 'wheel-section';
+                section.style.transform = `rotate(${deg * i}deg)`;
+                section.style.backgroundColor = shuffledColors[i];
+                wheel.appendChild(section);
+            }
+        }
+        
+        // Tạo vòng quay ban đầu
+        createWheel();
         
         // Kiểm tra thời gian quay cuối cùng
         const lastSpinKey = 'lastSpinTime';
@@ -1172,44 +1371,52 @@
             if (!canSpin) return;
             
             spinBtn.disabled = true;
-            const spinDegrees = 360 * 5 + Math.floor(Math.random() * 360); // Quay 5 vòng + ngẫu nhiên
-            const finalDegree = spinDegrees % 360;
-            const winningDeg = 360 - (winningSection * deg + deg / 2);
-            const isWin = Math.abs(finalDegree - winningDeg) < deg;
+            createWheel(); // Tạo lại vòng quay với vị trí màu vàng mới
+            
+            // Quay 5 vòng + ngẫu nhiên nhưng đảm bảo dừng ở vị trí chính xác
+            const spinDegrees = 360 * 5 + (360 - (winningSection * deg + deg / 2)) + Math.floor(Math.random() * deg) - deg/2;
             
             wheel.style.transform = `rotate(${-spinDegrees}deg)`;
+            wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
             
             // Lưu thời gian quay cuối cùng
             localStorage.setItem(lastSpinKey, new Date().getTime().toString());
             
             // Hiển thị kết quả sau khi quay xong
             setTimeout(function() {
+                const isWin = colors[winningSection] === '#f1c40f';
+                resultTitle.textContent = isWin ? 'CHÚC MỪNG!' : 'TIẾC QUÁ!';
+                resultMessage.textContent = isWin 
+                    ? 'Bạn đã trúng thưởng 1 vé tham quan Mũi Cà Mau miễn phí! Vui lòng liên hệ với chúng tôi để nhận thưởng.' 
+                    : 'Chúc bạn may mắn lần sau! Hãy quay lại sau 24 giờ để thử vận may.';
+                
                 if (isWin) {
-                    resultTitle.textContent = 'CHÚC MỪNG!';
-                    resultMessage.textContent = 'Bạn đã trúng thưởng 1 vé tham quan Mũi Cà Mau miễn phí! Vui lòng liên hệ với chúng tôi để nhận thưởng.';
                     createConfetti();
-                } else {
-                    resultTitle.textContent = 'TIẾC QUÁ!';
-                    resultMessage.textContent = 'Chúc bạn may mắn lần sau! Hãy quay lại sau 24 giờ để thử vận may.';
                 }
                 
                 resultModal.style.display = 'flex';
-                
-                // Cập nhật thông báo thời gian
                 timerMessage.textContent = 'Bạn có thể quay lại sau 24 giờ';
             }, 4000);
         });
         
-        // Đóng modal
+        // Đóng modal - SỬA LẠI PHẦN NÀY
         closeModal.addEventListener('click', function() {
             resultModal.style.display = 'none';
+            event.stopPropagation(); // Ngăn sự kiện lan ra ngoài
+        });
+        
+        // Đóng modal khi click ra ngoài
+        resultModal.addEventListener('click', function(e) {
+            if (e.target === resultModal) {
+                resultModal.style.display = 'none';
+            }
         });
         
         // Tạo hiệu ứng confetti khi trúng thưởng
         function createConfetti() {
             const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', 
-                            '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', 
-                            '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800'];
+                          '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', 
+                          '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800'];
             
             for (let i = 0; i < 100; i++) {
                 const confetti = document.createElement('div');
@@ -1222,7 +1429,6 @@
                 
                 document.body.appendChild(confetti);
                 
-                // Xóa confetti sau khi animation kết thúc
                 setTimeout(() => {
                     confetti.remove();
                 }, 5000);
@@ -1252,6 +1458,70 @@
         setInterval(updateTimer, 60000); // Cập nhật mỗi phút
     });
 </script>
+
+<script>
+    document.querySelectorAll('.gallery-item img').forEach(image => {
+    image.addEventListener('click', function() {
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-image');
+        const captionText = document.getElementById('caption');
+
+        // Ẩn header
+        document.querySelector('header').style.display = 'none'; 
+        modal.style.display = "flex";
+        modalImg.src = this.src;
+        captionText.innerHTML = this.alt; // Hiển thị alt text làm caption
+
+        // Thêm class để hiển thị modal với hiệu ứng
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10); // Nhỏ thời gian trễ để đảm bảo modal có thể hiển thị với opacity
+    });
+});
+
+document.getElementById('close-modal').addEventListener('click', function() {
+    const modal = document.getElementById('image-modal');
+    modal.classList.remove('show'); // Xóa class hiển thị
+
+    // Hiện lại header
+    document.querySelector('header').style.display = 'block';
+
+    // Đợi một chút trước khi ẩn modal hoàn toàn
+    setTimeout(() => {
+        modal.style.display = "none";
+    }, 500); // Thời gian tương ứng với thời gian chuyển tiếp
+});
+
+// Đóng modal khi click ra ngoài ảnh
+window.onclick = function(event) {
+    const modal = document.getElementById('image-modal');
+    if (event.target === modal) {
+        modal.classList.remove('show'); // Xóa class hiển thị
+
+        // Hiện lại header
+        document.querySelector('header').style.display = 'block';
+
+        // Đợi một chút trước khi ẩn modal hoàn toàn
+        setTimeout(() => {
+            modal.style.display = "none";
+        }, 500); // Thời gian tương ứng với thời gian chuyển tiếp
+    }
+}
+</script>
+
+<script>
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+    document.body.classList.toggle('invert-colors'); // Chuyển đổi class cho body
+
+    // Thay đổi biểu tượng nút
+    if (document.body.classList.contains('invert-colors')) {
+        this.innerHTML = '🌞'; // Biểu tượng mặt trời cho chế độ sáng
+    } else {
+        this.innerHTML = '🌙'; // Biểu tượng mặt trăng cho chế độ ban đêm
+    }
+});
+</script>
+
 </body>
 
 <footer>
@@ -1273,5 +1543,4 @@
         </div>
     </div>
 </footer>
-
 </html>
