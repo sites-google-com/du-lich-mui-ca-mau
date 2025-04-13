@@ -658,6 +658,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            display: none;
         }
 
         .close-modal:hover {
@@ -795,6 +796,7 @@
             color: white;
             font-size: 30px;
             cursor: pointer;
+            display: none;
         }
 
         .close:hover,
@@ -828,7 +830,21 @@
             filter: invert(1);
         }
 
-
+        #orderBtn:hover {
+        background-color: #ff5252;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        #foodOrderForm button:hover {
+            background-color: #45a049;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #66afe9;
+            box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
+        }
     </style>
 </head>
 
@@ -1141,8 +1157,195 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Món 5: Cá kèo kho tiêu -->
+                <div class="content-card" onclick="toggleCard(this)">
+                    <div class="card-img">
+                        <img src="https://cdn.tgdd.vn/Files/2021/09/13/1382286/cach-lam-ca-keo-kho-tieu-mon-ngon-dan-da-cho-moi-nha-202109131453589634.jpg" alt="Cá kèo kho tiêu">
+                    </div>
+                    <div class="card-content">
+                        <h3>Cá kèo kho tiêu</h3>
+                        <span class="short-desc">Đặc sản cá đồng thơm ngon với vị mặn ngọt đậm đà</span>
+                        
+                        <button class="ingredient-btn" onclick="event.stopPropagation(); toggleIngredients(this)">
+                            📝 Xem nguyên liệu
+                        </button>
+                        
+                        <div class="ingredient-list">
+                            <h4>Nguyên liệu chính:</h4>
+                            <ul>
+                                <li>Cá kèo tươi: 500g</li>
+                                <li>Nước mắm: 3 thìa canh</li>
+                                <li>Đường: 2 thìa canh</li>
+                                <li>Tiêu xanh: 1 nắm</li>
+                                <li>Tỏi băm: 2 thìa</li>
+                                <li>Ớt tươi: 3 trái</li>
+                                <li>Nước dừa tươi: 200ml</li>
+                            </ul>
+                        </div>
+                    
+                        <div class="full-desc">
+                            <p>Cá kèo kho tiêu là món ăn dân dã nhưng đậm chất miền Tây. Cá kèo được kho với nước dừa tươi, tiêu xanh và nước mắm nguyên chất cho đến khi nước kho sánh lại, thấm đều vào từng thớ thịt cá.</p>
+                            <p>Cách thưởng thức: Món này ăn nóng với cơm trắng, kèm rau sống các loại. Thịt cá ngọt tự nhiên, xương mềm, hòa quyện với vị cay nồng của tiêu xanh và vị béo ngậy của nước dừa.</p>
+                            <p>Địa chỉ nổi tiếng: Các quán ăn gia đình dọc sông Trẹm, đặc biệt là quán "Cá kèo quê" ở huyện Thới Bình.</p>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <!-- Món 6: Bánh xèo -->
+                    <div class="content-card" onclick="toggleCard(this)">
+                    <div class="card-img">
+                        <img src="https://img.mservice.com.vn/common/u/2e02fb5fe4f64fb55bc713540643c6f8eae702d101cea8c59afc49cfc505fc37/c8fe62a3-078a-487a-a652-afc65a0e6706fy_agf3e.jpg" alt="Bánh xèo Cà Mau">
+                    </div>
+                    <div class="card-content">
+                        <h3>Bánh xèo</h3>
+                        <span class="short-desc">Bánh xèo giòn rụm với nhân hải sản tươi ngon</span>
+                        
+                        <button class="ingredient-btn" onclick="event.stopPropagation(); toggleIngredients(this)">
+                            📝 Xem nguyên liệu
+                        </button>
+                        
+                        <div class="ingredient-list">
+                            <h4>Nguyên liệu chính:</h4>
+                            <ul>
+                                <li>Bột gạo: 300g</li>
+                                <li>Nước cốt dừa: 200ml</li>
+                                <li>Tôm đất: 200g</li>
+                                <li>Mực tươi: 100g</li>
+                                <li>Giá đỗ: 100g</li>
+                                <li>Thịt ba chỉ: 150g</li>
+                                <li>Hành lá, củ hành tím</li>
+                            </ul>
+                        </div>
+                    
+                        <div class="full-desc">
+                            <p>Bánh xèo Cà Mau có đặc trưng là vỏ bánh giòn, vàng ươm nhờ pha bột với nước cốt dừa, nhân bánh thường là hải sản tươi sống như tôm, mực kết hợp với thịt heo và giá đỗ.</p>
+                            <p>Cách ăn: Bánh được cuốn với bánh tráng hoặc rau sống, chấm với nước mắm chua ngọt pha tỏi ớt. Điểm khác biệt là nước chấm thường được pha thêm tương đậu nành để tăng độ đậm đà.</p>
+                            <p>Địa chỉ nổi tiếng: Quán bánh xèo "Bà Tư" ở thành phố Cà Mau với hơn 40 năm kinh nghiệm, hoặc chợ đêm Cà Mau.</p>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <!-- Món 7: Cá thòi lòi nướng -->
+                    <div class="content-card" onclick="toggleCard(this)">
+                    <div class="card-img">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ99Q4HBYjqqTEX_LaGjwMBVrql7wOVkfKleg&s" alt="Cá thòi lòi nướng">
+                    </div>
+                    <div class="card-content">
+                        <h3>Cá thòi lòi nướng</h3>
+                        <span class="short-desc">Đặc sản "kỳ dị" vùng ngập mặn Cà Mau</span>
+                        
+                        <button class="ingredient-btn" onclick="event.stopPropagation(); toggleIngredients(this)">
+                            📝 Xem nguyên liệu
+                        </button>
+                        
+                        <div class="ingredient-list">
+                            <h4>Nguyên liệu chính:</h4>
+                            <ul>
+                                <li>Cá thòi lòi tươi: 10 con</li>
+                                <li>Muối ớt: 50g</li>
+                                <li>Sả băm: 2 thìa</li>
+                                <li>Mật ong rừng: 1 thìa</li>
+                                <li>Dầu ăn: 1 thìa</li>
+                                <li>Chanh tươi: 2 trái</li>
+                            </ul>
+                        </div>
+                    
+                        <div class="full-desc">
+                            <p>Cá thòi lòi - loài cá có thể leo cây, sống trong các hang ở vùng ngập mặn. Thịt cá dai, ngọt và thơm đặc trưng. Cá thường được nướng muối ớt hoặc nướng mọi để giữ nguyên hương vị tự nhiên.</p>
+                            <p>Cách chế biến: Cá được làm sạch, ướp gia vị rồi nướng trên than hồng. Khi ăn dùng kèm rau rừng, bánh tráng và nước mắm me chua ngọt. Đầu cá là phần ngon nhất với vị béo của mỡ và gạch.</p>
+                            <p>Nơi thưởng thức: Các nhà hàng ven biển ở huyện Ngọc Hiển, đặc biệt là khu vực gần Vườn quốc gia Mũi Cà Mau.</p>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <!-- Món 8: Mắm tép -->
+                    <div class="content-card" onclick="toggleCard(this)">
+                    <div class="card-img">
+                        <img src="https://huongvique.vn/wp-content/uploads/2019/12/mam-tep-ca-mau-3.jpg" alt="Mắm tép Cà Mau">
+                    </div>
+                    <div class="card-content">
+                        <h3>Mắm tép</h3>
+                        <span class="short-desc">Mắm tép chua ngọt - gia vị đặc trưng miền Tây</span>
+                        
+                        <button class="ingredient-btn" onclick="event.stopPropagation(); toggleIngredients(this)">
+                            📝 Xem nguyên liệu
+                        </button>
+                        
+                        <div class="ingredient-list">
+                            <h4>Nguyên liệu chính:</h4>
+                            <ul>
+                                <li>Tép đồng tươi: 1kg</li>
+                                <li>Muối hạt: 200g</li>
+                                <li>Đường thốt nốt: 300g</li>
+                                <li>Tỏi: 100g</li>
+                                <li>Ớt hiểm: 20 trái</li>
+                                <li>Thính gạo: 50g</li>
+                            </ul>
+                        </div>
+                    
+                        <div class="full-desc">
+                            <p>Mắm tép Cà Mau được ủ từ tép đồng tươi ngon, kết hợp với muối, đường và gia vị theo công thức truyền thống. Mắm có vị chua ngọt hài hòa, mùi thơm đặc trưng của thính gạo và tỏi ớt.</p>
+                            <p>Cách dùng: Mắm tép dùng làm nước chấm cho các món luộc, ăn kèm bún, cơm nóng hoặc làm nguyên liệu chế biến các món kho. Đặc biệt ngon khi trộn với thịt ba chỉ luộc thái mỏng.</p>
+                            <p>Địa chỉ mua: Chợ nổi Cà Mau, các làng nghề làm mắm ở huyện Trần Văn Thời hoặc chợ Đầm Cùng.</p>
+                        </div>
+                    </div>
+                    </div>
+
             </div>
         </section>
+
+<!-- Nút Đặt món và form -->
+<div style="text-align: center; margin: 30px 0;">
+    <button id="orderBtn" style="padding: 12px 24px; background-color: #ff6b6b; color: white; border: none; border-radius: 25px; font-size: 18px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+        Đặt món
+    </button>
+</div>
+
+<!-- Form đặt món (ẩn ban đầu) -->
+<div id="orderForm" style="display: none; max-width: 500px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
+    <h3 style="text-align: center; margin-bottom: 20px; color: #333;">Thông tin đặt món</h3>
+    
+    <form id="foodOrderForm">
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Số điện thoại</label>
+            <input type="tel" id="phone" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Địa điểm</label>
+            <input type="text" id="location" required 
+                   style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+                   placeholder="Nhập địa điểm của bạn">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Món ăn đặt hàng</label>
+            <select id="foodItem" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="">-- Chọn món --</option>
+                <option value="Ba khía">Ba khía</option>
+                <option value="Lẩu mắm">Lẩu mắm</option>
+                <option value="Cua Cà Mau">Cua Cà Mau</option>
+                <option value="Bánh tằm">Bánh tằm</option>
+                <option value="Cá kèo kho tiêu">Cá kèo kho tiêu</option>
+                <option value="Bánh xèo">Bánh xèo</option>
+                <option value="Cá thòi lòi nướng">Cá thòi lòi nướng</option>
+                <option value="Mắm tép">Mắm tép</option>
+            </select>
+        </div>
+        
+        <button type="submit" style="width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background-color 0.3s;">
+            Gửi đơn đặt hàng
+        </button>
+    </form>
+</div>
+
+<!-- Thông báo xác nhận (ẩn ban đầu) -->
+<div id="confirmation" style="display: none; text-align: center; padding: 20px; background-color: #dff0d8; color: #3c763d; border-radius: 5px; max-width: 500px; margin: 20px auto;">
+    <h3 style="margin-top: 0;">Đã xác nhận đặt món!</h3>
+    <p>Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.</p>
+</div>
+
     </div>
 </section>
 
@@ -1520,6 +1723,41 @@ window.onclick = function(event) {
         this.innerHTML = '🌙'; // Biểu tượng mặt trăng cho chế độ ban đêm
     }
 });
+</script>
+
+<script>
+    // Hiển thị form khi click nút Đặt món
+    document.getElementById('orderBtn').addEventListener('click', function() {
+        document.getElementById('orderForm').style.display = 'block';
+        document.getElementById('confirmation').style.display = 'none';
+        this.style.display = 'none'; // Ẩn nút Đặt món
+    });
+
+    // Xử lý khi submit form
+    document.getElementById('foodOrderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Lấy giá trị từ form
+        const phone = document.getElementById('phone').value;
+        const location = document.getElementById('location').value;
+        const foodItem = document.getElementById('foodItem').value;
+        
+        // Ở đây bạn có thể thêm code để gửi dữ liệu đến server
+        console.log('Đơn đặt hàng:', { phone, location, foodItem });
+        
+        // Hiển thị thông báo xác nhận
+        document.getElementById('orderForm').style.display = 'none';
+        document.getElementById('confirmation').style.display = 'block';
+        
+        // Reset form
+        this.reset();
+        
+        // Hiển thị lại nút Đặt món và ẩn thông báo sau 5 giây
+        setTimeout(function() {
+            document.getElementById('orderBtn').style.display = 'inline-block';
+            document.getElementById('confirmation').style.display = 'none';
+        }, 5000);
+    });
 </script>
 
 </body>
