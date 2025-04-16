@@ -985,6 +985,16 @@
         html, body {
             scroll-behavior: smooth; /* Tùy chọn: tạo hiệu ứng smooth cho mọi scroll */
         }
+
+        /* Làm mượt toàn bộ scroll trên trang */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hiệu ứng fade-in cho section */
+        .page-section {
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 
@@ -1079,6 +1089,10 @@
     
     // Khôi phục tab khi tải trang
     function restoreActiveTab() {
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
         const savedTab = localStorage.getItem('activeTab');
         if (savedTab) {
             const tabLink = document.querySelector(`nav a[data-section="${savedTab}"]`);
@@ -1093,16 +1107,21 @@
                 // Hiển thị tab đã lưu
                 const activeSection = document.getElementById(savedTab);
                 activeSection.style.display = 'block';
+                
+                // Thêm hiệu ứng đợi 0.5s trước khi scroll
                 setTimeout(() => {
                     activeSection.style.opacity = '1';
                     activeSection.classList.add('active');
                     
-                    // THÊM DÒNG NÀY: Scroll về đầu section
-                    window.scrollTo({
-                        top: activeSection.offsetTop,
-                        behavior: 'instant' // Hoặc 'smooth' nếu muốn hiệu ứng mượt
-                    });
-                }, 10);
+                    // Scroll mượt về đầu section sau 500ms
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: activeSection.offsetTop,
+                            behavior: 'smooth' // Thay 'instant' bằng 'smooth'
+                        });
+                    }, 500);
+                    
+                }, 50);
                 
                 // Cập nhật menu
                 document.querySelectorAll('nav a').forEach(link => {
@@ -1120,6 +1139,23 @@
             }
         }
     }
+
+    // Sự kiện load trang
+    window.addEventListener('load', function() {
+        const savedTab = localStorage.getItem('activeTab');
+        if (savedTab) {
+            const activeSection = document.getElementById(savedTab);
+            if (activeSection) {
+                // Thêm độ trễ 500ms trước khi scroll
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: activeSection.offsetTop,
+                        behavior: 'smooth' // Hiệu ứng mượt
+                    });
+                }, 500);
+            }
+        }
+    });
     
     // Gọi khi DOM load xong
     document.addEventListener('DOMContentLoaded', function() {
@@ -2056,173 +2092,91 @@ window.onclick = function(event) {
 </script>
 
 <script>
-    // Hàm khởi tạo carousel
-    function initNewsCarousel() {
-        const slider = document.querySelector('#news-carousel .news-slider');
-        const slides = document.querySelectorAll('#news-carousel .news-slide');
-        if (slides.length === 0) return; // Bảo vệ nếu không có slide nào
+    document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.querySelector('#news-carousel .news-slider');
+    const slides = document.querySelectorAll('#news-carousel .news-slide');
+    if (slides.length === 0) return;
+
+    const firstClone = slides[0].cloneNode(true);
+    const lastClone = slides[slides.length - 1].cloneNode(true);
+    
+    firstClone.id = 'first-clone';
+    lastClone.id = 'last-clone';
+    
+    slider.appendChild(firstClone);
+    slider.insertBefore(lastClone, slides[0]);
+    
+    const allSlides = document.querySelectorAll('#news-carousel .news-slide');
+    let currentIndex = 1;
+    let isTransitioning = false;
+    
+    slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+    
+    function updateDots() {
+        const dots = document.querySelectorAll('#news-carousel .dot');
+        let dotIndex = currentIndex - 1;
+        if (dotIndex < 0) dotIndex = slides.length - 1;
+        if (dotIndex >= slides.length) dotIndex = 0;
         
-        // Clone slide đầu và cuối
-        const firstClone = slides[0].cloneNode(true);
-        const lastClone = slides[slides.length - 1].cloneNode(true);
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === dotIndex);
+        });
+    }
+    
+    function goToSlide(index) {
+        if (isTransitioning) return;
         
-        firstClone.id = 'first-clone';
-        lastClone.id = 'last-clone';
-        
-        slider.appendChild(firstClone);
-        slider.insertBefore(lastClone, slides[0]);
-        
-        const allSlides = document.querySelectorAll('#news-carousel .news-slide');
-        let currentIndex = 1;
-        let isTransitioning = false;
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        // Thiết lập vị trí ban đầu
+        isTransitioning = true;
+        currentIndex = index;
+        slider.style.transition = 'transform 0.5s ease';
         slider.style.transform = `translateX(-${currentIndex * 100}%)`;
         
-        // Cập nhật dot navigation
-        function updateDots() {
-            const dots = document.querySelectorAll('#news-carousel .dot');
-            let dotIndex = currentIndex - 1;
-            if (dotIndex < 0) dotIndex = slides.length - 1;
-            if (dotIndex >= slides.length) dotIndex = 0;
-            
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === dotIndex);
-            });
-        }
-        
-        // Chuyển slide
-        function goToSlide(index) {
-            if (isTransitioning) return;
-            
-            isTransitioning = true;
-            currentIndex = index;
-            slider.style.transition = 'transform 0.5s ease';
-            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
-            
-            updateDots();
-        }
-        
-        // Tự động chuyển slide
-        let slideInterval;
-        function startAutoSlide() {
-            slideInterval = setInterval(() => {
-                goToSlide(currentIndex + 1);
-            }, 5000);
-        }
-        
-        // Xử lý khi transition kết thúc
-        function handleTransitionEnd() {
-            isTransitioning = false;
-            
-            if (currentIndex === 0) {
-                slider.style.transition = 'none';
-                currentIndex = allSlides.length - 2;
-                slider.style.transform = `translateX(-${currentIndex * 100}%)`;
-                setTimeout(() => slider.style.transition = 'transform 0.5s ease', 10);
-            }
-            else if (currentIndex === allSlides.length - 1) {
-                slider.style.transition = 'none';
-                currentIndex = 1;
-                slider.style.transform = `translateX(-${currentIndex * 100}%)`;
-                setTimeout(() => slider.style.transition = 'transform 0.5s ease', 10);
-            }
-        }
-        
-        // Xử lý sự kiện touch cho mobile
-        function handleTouchStart(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }
-        
-        function handleTouchEnd(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }
-        
-        function handleSwipe() {
-            if (touchEndX < touchStartX) {
-                goToSlide(currentIndex + 1); // Swipe left
-            } else if (touchEndX > touchStartX) {
-                goToSlide(currentIndex - 1); // Swipe right
-            }
-        }
-        
-        // Khởi tạo sự kiện
-        function setupEvents() {
-            const nextBtn = document.querySelector('#news-carousel .news-next');
-            const prevBtn = document.querySelector('#news-carousel .news-prev');
-            const dots = document.querySelectorAll('#news-carousel .dot');
-            
-            // Button events
-            nextBtn.addEventListener('click', () => {
-                clearInterval(slideInterval);
-                goToSlide(currentIndex + 1);
-                startAutoSlide();
-            });
-            
-            prevBtn.addEventListener('click', () => {
-                clearInterval(slideInterval);
-                goToSlide(currentIndex - 1);
-                startAutoSlide();
-            });
-            
-            // Dot events
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', () => {
-                    clearInterval(slideInterval);
-                    goToSlide(index + 1);
-                    startAutoSlide();
-                });
-            });
-            
-            // Touch events
-            slider.addEventListener('touchstart', handleTouchStart, {passive: true});
-            slider.addEventListener('touchend', handleTouchEnd, {passive: true});
-            
-            // Transition end
-            slider.addEventListener('transitionend', handleTransitionEnd);
-            
-            // Pause on hover
-            slider.addEventListener('mouseenter', () => clearInterval(slideInterval));
-            slider.addEventListener('mouseleave', startAutoSlide);
-        }
-        
-        // Khởi động
         updateDots();
-        setupEvents();
-        startAutoSlide();
     }
     
-    // Khởi tạo khi chuyển đến tab Du lịch
-    function setupTabObserver() {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'style') {
-                    const duLichSection = document.getElementById('du-lich-section');
-                    if (duLichSection.style.display === 'block') {
-                        initNewsCarousel();
-                    }
-                }
-            });
-        });
+    // ĐÃ XÓA PHẦN TỰ ĐỘNG CHUYỂN SLIDE
+    
+    function handleTransitionEnd() {
+        isTransitioning = false;
         
-        const config = { attributes: true };
-        const duLichSection = document.getElementById('du-lich-section');
-        observer.observe(duLichSection, config);
-    }
-    
-    // Kích hoạt khi DOM load xong
-    document.addEventListener('DOMContentLoaded', function() {
-        // Nếu đang ở tab Du lịch ngay từ đầu
-        if (document.getElementById('du-lich-section').style.display === 'block') {
-            initNewsCarousel();
+        if (currentIndex === 0) {
+            slider.style.transition = 'none';
+            currentIndex = allSlides.length - 2;
+            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+            setTimeout(() => slider.style.transition = 'transform 0.5s ease', 10);
         }
-        
-        // Theo dõi thay đổi tab
-        setupTabObserver();
+        else if (currentIndex === allSlides.length - 1) {
+            slider.style.transition = 'none';
+            currentIndex = 1;
+            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+            setTimeout(() => slider.style.transition = 'transform 0.5s ease', 10);
+        }
+    }
+    
+    // Khởi tạo sự kiện (đã bỏ các phần liên quan đến auto slide)
+    const nextBtn = document.querySelector('#news-carousel .news-next');
+    const prevBtn = document.querySelector('#news-carousel .news-prev');
+    const dots = document.querySelectorAll('#news-carousel .dot');
+    
+    nextBtn.addEventListener('click', () => {
+        goToSlide(currentIndex + 1);
     });
+    
+    prevBtn.addEventListener('click', () => {
+        goToSlide(currentIndex - 1);
+    });
+    
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            goToSlide(index + 1);
+        });
+    });
+    
+    slider.addEventListener('transitionend', handleTransitionEnd);
+    
+    // Khởi động
+    updateDots();
+});
 </script>
 
 </body>
